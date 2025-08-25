@@ -2,12 +2,12 @@ from setuptools import setup, find_packages
 from torch.utils.cpp_extension import BuildExtension, CUDAExtension
 
 setup(
-    name='pointpillars',
+    name='pillarpainting_ops',
     version='0.1',
     packages=find_packages(),
     ext_modules=[
         CUDAExtension(
-            name='pointpillars.ops.voxel_op',
+            name='voxel_op',
             sources=[
                 'build/voxelization/voxelization.cpp',
                 'build/voxelization/voxelization_cpu.cpp',
@@ -16,7 +16,7 @@ setup(
             define_macros=[('WITH_CUDA', None)]
         ),
         CUDAExtension(
-            name='pointpillars.ops.iou3d_op',
+            name='iou3d_op',
             sources=[
                 'build/iou3d/iou3d.cpp',
                 'build/iou3d/iou3d_kernel.cu',

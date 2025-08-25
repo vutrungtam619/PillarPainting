@@ -1,0 +1,26 @@
+{
+    "configurations": [
+        {
+            "name": "Win32",
+            "includePath": [
+                "${workspaceFolder}/**",
+                "C:/Program Files/NVIDIA GPU Computing Toolkit/CUDA/v12.9/include",
+                "C:/Users/Admin/anaconda3/envs/pillar3/Lib/site-packages/torch/include",
+                "C:/Users/Admin/anaconda3/envs/pillar3/Lib/site-packages/torch/include/torch/csrc/api/include",
+                "C:/Users/Admin/anaconda3/envs/pillar3/Lib/site-packages/torch/include/THC",
+                "C:/Users/Admin/anaconda3/envs/pillar3/Lib/site-packages/torch/include/torch/csrc/api/include"
+            ],
+            "defines": [
+                "_DEBUG",
+                "UNICODE",
+                "_UNICODE"
+            ],
+            "windowsSdkVersion": "10.0.22621.0",
+            "compilerPath": "cl.exe",
+            "cStandard": "c17",
+            "cppStandard": "c++17",
+            "intelliSenseMode": "windows-msvc-x64"
+        }
+    ],
+    "version": 4
+}

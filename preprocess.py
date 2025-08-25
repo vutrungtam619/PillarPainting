@@ -87,7 +87,7 @@ def create_data_info_pkl(data_root, data_type, label):
             label_path = os.path.join(data_root, split, 'label_2', f'{id}.txt')
             annotation_dict = read_label(label_path)
             annotation_dict['difficulty'] = judge_difficulty(annotation_dict)
-            annotation_dict['num_points_in_gt'] = get_points_num_in_bbox(points=reduced_points, r0_rect=calib_dict['R0_rect'], tr_velo_to_cam=calib_dict['Tr_velo_to_cam'], dimensions=annotation_dict['dimensions'], location=annotation_dict['location'], rotation_y=annotation_dict['rotation_y'], name=annotation_dict['name'])
+            annotation_dict['num_points_in_gt'] = get_points_num_in_bbox(points=reduced_points, R0_rect=calib_dict['R0_rect'], Tr_velo_to_cam=calib_dict['Tr_velo_to_cam'], dimensions=annotation_dict['dimensions'], location=annotation_dict['location'], rotation_y=annotation_dict['rotation_y'], name=annotation_dict['name'])
             cur_info_dict['annos'] = annotation_dict
             
         kitti_infos_dict[int(id)] = cur_info_dict

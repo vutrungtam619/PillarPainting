@@ -7,9 +7,7 @@ from tqdm import tqdm
 from utils.io import read_calib, read_points, read_label, write_points, write_pickle
 from utils.process import remove_points_out_image, get_points_num_in_bbox
 
-sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
-
-project_root = os.path.dirname(os.path.dirname(__file__))
+project_root = os.path.dirname(__file__)
 
 def judge_difficulty(annotation_dict):
     """ classify difficulty level of each object base on KITTI bench mark

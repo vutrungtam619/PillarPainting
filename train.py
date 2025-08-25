@@ -12,8 +12,6 @@ from model.pillarpainting import PillarPainting
 from utils.loss import Loss
 from torch.utils.tensorboard import SummaryWriter
 
-sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
-
 def save_summary(writer, loss_dict, global_step, tag, lr=None, momentum=None):
     for k, v in loss_dict.items():
         writer.add_scalar(f'{tag}/{k}', v, global_step)

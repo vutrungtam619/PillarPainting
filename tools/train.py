@@ -1,6 +1,7 @@
 import argparse
 import os
 import torch
+import sys
 from config.config import config
 from tqdm import tqdm
 from utils.process import setup_seed
@@ -10,6 +11,8 @@ from model.bisnetv2 import BiSeNetV2
 from model.pillarpainting import PillarPainting
 from utils.loss import Loss
 from torch.utils.tensorboard import SummaryWriter
+
+sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 
 def save_summary(writer, loss_dict, global_step, tag, lr=None, momentum=None):
     for k, v in loss_dict.items():

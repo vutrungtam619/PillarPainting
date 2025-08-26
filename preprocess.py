@@ -83,7 +83,7 @@ def create_data_info_pkl(data_root, data_type, label):
         velodyne_reduced_file = os.path.join(velodyne_reduced_folder, f'{id}.bin')
         write_points(reduced_points, velodyne_reduced_file)
         
-        cur_info_dict['velodyne_path'] = velodyne_reduced_file
+        cur_info_dict['velodyne_path'] = sep.join(lidar_path.split(sep)[-3:])
         
         if label:
             label_path = os.path.join(data_root, split, 'label_2', f'{id}.txt')

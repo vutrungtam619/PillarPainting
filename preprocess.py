@@ -50,12 +50,12 @@ def create_data_info_pkl(data_root, data_type, label):
     ids_file = os.path.join(project_root, 'dataset', 'index', f'{data_type}.txt') # Path to txt file include id
     with open(ids_file, 'r') as f:
         ids = [id.strip() for id in f.readlines()] # List of id in string 
-        
-    split = 'training' if label else 'testing'
-    
+
     # create folder to save velodyne_reduced
-    velodyne_reduced_folder = os.path.join(project_root, 'dataset', 'velodyne_reduced', split)
+    velodyne_reduced_folder = os.path.join(data_root, split, 'velodyne_reduced')
     os.makedirs(velodyne_reduced_folder, exist_ok=True)
+                
+    split = 'training' if label else 'testing'
             
     kitti_infos_dict = {}
     for id in tqdm(ids): 
@@ -78,10 +78,6 @@ def create_data_info_pkl(data_root, data_type, label):
         # read lidar point and filter the point outside of image frustum
         lidar_points = read_points(lidar_path)
         reduced_points = remove_outside_points(lidar_points, calib_dict['R0_rect'], calib_dict['Tr_velo_to_cam'], calib_dict['P2'], image_shape)
-
-        # create folder to save velodyne_reduced
-        velodyne_reduced_folder = os.path.join(project_root, 'dataset', 'velodyne_reduced', split)
-        os.makedirs(velodyne_reduced_folder, exist_ok=True)
             
         # write the reduced_points to bin file
         velodyne_reduced_file = os.path.join(velodyne_reduced_folder, f'{id}.bin')
@@ -98,7 +94,7 @@ def create_data_info_pkl(data_root, data_type, label):
             
         kitti_infos_dict[int(id)] = cur_info_dict
     
-    save_pkl_path = os.path.join(project_root, 'dataset', f'kitti_infos_{data_type}.pkl')
+    save_pkl_path = os.path.join(data_root, f'kitti_infos_{data_type}.pkl')
     write_pickle(save_pkl_path, kitti_infos_dict)       
     
     return kitti_infos_dict

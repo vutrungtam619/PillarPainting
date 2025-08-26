@@ -55,6 +55,7 @@ def create_data_info_pkl(data_root, data_type, label):
     
     # create folder to save velodyne_reduced
     velodyne_reduced_folder = os.path.join(project_root, 'dataset', 'velodyne_reduced', split)
+    os.makedirs(velodyne_reduced_folder, exist_ok=True)
             
     kitti_infos_dict = {}
     for id in tqdm(ids): 
@@ -81,6 +82,7 @@ def create_data_info_pkl(data_root, data_type, label):
         # write the reduced_points to bin file
         velodyne_reduced_file = os.path.join(velodyne_reduced_folder, f'{id}.bin')
         write_points(velodyne_reduced_file, reduced_points)
+        
         cur_info_dict['velodyne_path'] = velodyne_reduced_file
         
         if label:

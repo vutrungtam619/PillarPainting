@@ -6,7 +6,7 @@ def read_points(file_path, dim=4):
     return np.fromfile(file_path, dtype=np.float32).reshape(-1, dim)
 
 def write_points(file_path, data):
-    with open(file_path, 'w') as f:
+    with open(file_path, 'wb') as f:
         data.tofile(f)
 
 def read_pickle(file_path, suffix='.pkl'):

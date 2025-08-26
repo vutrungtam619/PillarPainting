@@ -772,7 +772,7 @@ def image_to_tensor(img):
     img = to_tensor(dict(img=img, label=None))['img'].cuda()
     return img
 
-def project_point_to_camera(self, point, calib, eps=1e-6):
+def project_point_to_camera(point, calib, eps=1e-6):
     """ Project mean centers of pillars to camera image coordinates.
     Args: 
         point (torch.Tensor): shape (P1 + P2 + ... + Pb, 3) where P1 + P2 + ... + Pb is the total number of pillars in the batch.

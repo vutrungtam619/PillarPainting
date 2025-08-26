@@ -5,7 +5,7 @@ import pickle
 def read_points(file_path, dim=4):
     return np.fromfile(file_path, dtype=np.float32).reshape(-1, dim)
 
-def write_points(file_path, data):
+def write_points(data, file_path):
     with open(file_path, 'wb') as f:
         data.tofile(f)
 

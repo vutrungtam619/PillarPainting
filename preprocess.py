@@ -60,11 +60,19 @@ def create_data_info_pkl(data_root, data_type, label):
             
     kitti_infos_dict = {}
     for id in tqdm(ids): 
-        loop_start = time.time()
+        
         cur_info_dict = {}
+        
+        t1 = time.time()
+        
         image_path = os.path.join(data_root, split, 'image_2', f'{id}.png')
         lidar_path = os.path.join(data_root, split, 'velodyne', f'{id}.bin')
         calib_path = os.path.join(data_root, split, 'calib', f'{id}.txt')
+        cur_info_dict['velodyne_path'] = sep.join(lidar_path.split(sep)[-3:])
+        
+        print(f"Read image: {time.time() - t1:.6f}s")
+        
+        t2 = time.time()
         
         image = cv2.imread(image_path)
         image_shape = image.shape[:2]
@@ -74,18 +82,32 @@ def create_data_info_pkl(data_root, data_type, label):
             'image_idx': int(id),
         }
         
+        print(f"Read image: {time.time() - t2:.6f}s")
+        
+        t3 = time.time()
+        
         calib_dict = read_calib(calib_path)
         cur_info_dict['calib'] = calib_dict
+        
+        print(f"Read image: {time.time() - t3:.6f}s")
+        
+        t4 = time.time()
         
         # read lidar point and filter the point outside of image frustum
         lidar_points = read_points(lidar_path)
         reduced_points = remove_outside_points(lidar_points, calib_dict['R0_rect'], calib_dict['Tr_velo_to_cam'], calib_dict['P2'], image_shape)
-            
+        
+        print(f"Process reduced points: {time.time() - t4:.6f}s")
+        
+        t5 = time.time()
+           
         # write the reduced_points to bin file
         velodyne_reduced_file = os.path.join(velodyne_reduced_folder, f'{id}.bin')
         write_points(reduced_points, velodyne_reduced_file)
         
-        cur_info_dict['velodyne_path'] = sep.join(lidar_path.split(sep)[-3:])
+        print(f"Write points time: {time.time() - t5:.6f}s")   
+        
+        t6 = time.time()
         
         if label:
             label_path = os.path.join(data_root, split, 'label_2', f'{id}.txt')
@@ -93,10 +115,11 @@ def create_data_info_pkl(data_root, data_type, label):
             annotation_dict['difficulty'] = judge_difficulty(annotation_dict)
             annotation_dict['num_points_in_gt'] = get_points_num_in_bbox(points=reduced_points, R0_rect=calib_dict['R0_rect'], Tr_velo_to_cam=calib_dict['Tr_velo_to_cam'], dimensions=annotation_dict['dimensions'], location=annotation_dict['location'], rotation_y=annotation_dict['rotation_y'], name=annotation_dict['name'])
             cur_info_dict['annos'] = annotation_dict
+        
+        print(f"Label time: {time.time() - t6:.6f}s")
             
         kitti_infos_dict[int(id)] = cur_info_dict
-        loop_end = time.time()
-        print(f"Time for loop {id}: {loop_end - loop_start:.3f} s")
+        
     
     save_pkl_path = os.path.join(data_root, f'kitti_infos_{data_type}.pkl')
     write_pickle(save_pkl_path, kitti_infos_dict)       

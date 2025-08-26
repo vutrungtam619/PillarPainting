@@ -7,3 +7,4 @@ from .process import bbox_camera2lidar, bbox3d2bevcorners, box_collision_test, \
     bbox3d2corners_camera, points_camera2image, image_to_tensor, ToTensor, project_point_to_camera
 from .anchor import Anchors, anchors2bboxes, bboxes2deltas
 from .loss import Loss
+from .vis_o3d import vis_pc, vis_img_3d

@@ -1,7 +1,6 @@
 import argparse
 import os
 import torch
-import sys
 from tqdm import tqdm
 from config.config import config
 

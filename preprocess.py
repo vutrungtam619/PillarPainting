@@ -70,7 +70,7 @@ def create_data_info_pkl(data_root, data_type, label):
         calib_path = os.path.join(data_root, split, 'calib', f'{id}.txt')
         cur_info_dict['velodyne_path'] = sep.join(lidar_path.split(sep)[-3:])
         
-        print(f"Read image: {time.time() - t1:.6f}s")
+        print(f"Read time: {time.time() - t1:.6f}s")
         
         t2 = time.time()
         
@@ -89,7 +89,7 @@ def create_data_info_pkl(data_root, data_type, label):
         calib_dict = read_calib(calib_path)
         cur_info_dict['calib'] = calib_dict
         
-        print(f"Read image: {time.time() - t3:.6f}s")
+        print(f"Read calib: {time.time() - t3:.6f}s")
         
         t4 = time.time()
         

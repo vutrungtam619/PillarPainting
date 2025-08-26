@@ -1,4 +1,5 @@
 *.egg-info
+*.pyd
 /build/bdist.win-amd64/
 /build/lib.win-amd64-cpython-39/
 /build/temp.win-amd64-cpython-39/

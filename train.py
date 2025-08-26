@@ -2,14 +2,12 @@ import argparse
 import os
 import torch
 import sys
-from config.config import config
 from tqdm import tqdm
-from utils.process import setup_seed
-from dataset.kitti import Kitti
-from dataset.data_loader import get_dataloader
-from model.bisnetv2 import BiSeNetV2
-from model.pillarpainting import PillarPainting
-from utils.loss import Loss
+from config.config import config
+
+from utils import setup_seed, Loss
+from dataset import Kitti, get_dataloader
+from model import BiSeNetV2, PillarPainting
 from torch.utils.tensorboard import SummaryWriter
 
 def save_summary(writer, loss_dict, global_step, tag, lr=None, momentum=None):

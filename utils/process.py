@@ -3,7 +3,8 @@ import numba
 import numpy as np
 import random
 import torch
-
+from build import boxes_overlap_bev, boxes_iou_bev
+from torch.utils.data import Dataset
 
 def setup_seed(seed=0, deterministic = True):
     random.seed(seed)
@@ -460,89 +461,89 @@ def iou2d_nearest(bboxes1, bboxes2):
     return iou
 
 
-# def iou3d(bboxes1, bboxes2):
-#     '''
-#     bboxes1: (n, 7), (x, y, z, w, l, h, theta)
-#     bboxes2: (m, 7)
-#     return: (n, m)
-#     '''
-#     # 1. height overlap
-#     bboxes1_bottom, bboxes2_bottom = bboxes1[:, 2], bboxes2[:, 2] # (n, ), (m, )
-#     bboxes1_top, bboxes2_top = bboxes1[:, 2] + bboxes1[:, 5], bboxes2[:, 2] + bboxes2[:, 5] # (n, ), (m, )
-#     bboxes_bottom = torch.maximum(bboxes1_bottom[:, None], bboxes2_bottom[None, :]) # (n, m) 
-#     bboxes_top = torch.minimum(bboxes1_top[:, None], bboxes2_top[None, :])
-#     height_overlap =  torch.clamp(bboxes_top - bboxes_bottom, min=0)
+def iou3d(bboxes1, bboxes2):
+    '''
+    bboxes1: (n, 7), (x, y, z, w, l, h, theta)
+    bboxes2: (m, 7)
+    return: (n, m)
+    '''
+    # 1. height overlap
+    bboxes1_bottom, bboxes2_bottom = bboxes1[:, 2], bboxes2[:, 2] # (n, ), (m, )
+    bboxes1_top, bboxes2_top = bboxes1[:, 2] + bboxes1[:, 5], bboxes2[:, 2] + bboxes2[:, 5] # (n, ), (m, )
+    bboxes_bottom = torch.maximum(bboxes1_bottom[:, None], bboxes2_bottom[None, :]) # (n, m) 
+    bboxes_top = torch.minimum(bboxes1_top[:, None], bboxes2_top[None, :])
+    height_overlap =  torch.clamp(bboxes_top - bboxes_bottom, min=0)
 
-#     # 2. bev overlap
-#     bboxes1_x1y1 = bboxes1[:, :2] - bboxes1[:, 3:5] / 2
-#     bboxes1_x2y2 = bboxes1[:, :2] + bboxes1[:, 3:5] / 2
-#     bboxes2_x1y1 = bboxes2[:, :2] - bboxes2[:, 3:5] / 2
-#     bboxes2_x2y2 = bboxes2[:, :2] + bboxes2[:, 3:5] / 2
-#     bboxes1_bev = torch.cat([bboxes1_x1y1, bboxes1_x2y2, bboxes1[:, 6:]], dim=-1)
-#     bboxes2_bev = torch.cat([bboxes2_x1y1, bboxes2_x2y2, bboxes2[:, 6:]], dim=-1)
-#     bev_overlap = boxes_overlap_bev(bboxes1_bev, bboxes2_bev) # (n, m)
+    # 2. bev overlap
+    bboxes1_x1y1 = bboxes1[:, :2] - bboxes1[:, 3:5] / 2
+    bboxes1_x2y2 = bboxes1[:, :2] + bboxes1[:, 3:5] / 2
+    bboxes2_x1y1 = bboxes2[:, :2] - bboxes2[:, 3:5] / 2
+    bboxes2_x2y2 = bboxes2[:, :2] + bboxes2[:, 3:5] / 2
+    bboxes1_bev = torch.cat([bboxes1_x1y1, bboxes1_x2y2, bboxes1[:, 6:]], dim=-1)
+    bboxes2_bev = torch.cat([bboxes2_x1y1, bboxes2_x2y2, bboxes2[:, 6:]], dim=-1)
+    bev_overlap = boxes_overlap_bev(bboxes1_bev, bboxes2_bev) # (n, m)
 
-#     # 3. overlap and volume
-#     overlap = height_overlap * bev_overlap
-#     volume1 = bboxes1[:, 3] * bboxes1[:, 4] * bboxes1[:, 5]
-#     volume2 = bboxes2[:, 3] * bboxes2[:, 4] * bboxes2[:, 5]
-#     volume = volume1[:, None] + volume2[None, :] # (n, m)
+    # 3. overlap and volume
+    overlap = height_overlap * bev_overlap
+    volume1 = bboxes1[:, 3] * bboxes1[:, 4] * bboxes1[:, 5]
+    volume2 = bboxes2[:, 3] * bboxes2[:, 4] * bboxes2[:, 5]
+    volume = volume1[:, None] + volume2[None, :] # (n, m)
 
-#     # 4. iou
-#     iou = overlap / (volume - overlap + 1e-8)
+    # 4. iou
+    iou = overlap / (volume - overlap + 1e-8)
 
-#     return iou
+    return iou
     
 
-# def iou3d_camera(bboxes1, bboxes2):
-#     '''
-#     bboxes1: (n, 7), (x, y, z, w, l, h, theta)
-#     bboxes2: (m, 7)
-#     return: (n, m)
-#     '''
-#     # 1. height overlap
-#     bboxes1_bottom, bboxes2_bottom = bboxes1[:, 1] - bboxes1[:, 4], bboxes2[:, 1] -  bboxes2[:, 4] # (n, ), (m, )
-#     bboxes1_top, bboxes2_top = bboxes1[:, 1], bboxes2[:, 1] # (n, ), (m, )
-#     bboxes_bottom = torch.maximum(bboxes1_bottom[:, None], bboxes2_bottom[None, :]) # (n, m) 
-#     bboxes_top = torch.minimum(bboxes1_top[:, None], bboxes2_top[None, :])
-#     height_overlap =  torch.clamp(bboxes_top - bboxes_bottom, min=0)
+def iou3d_camera(bboxes1, bboxes2):
+    '''
+    bboxes1: (n, 7), (x, y, z, w, l, h, theta)
+    bboxes2: (m, 7)
+    return: (n, m)
+    '''
+    # 1. height overlap
+    bboxes1_bottom, bboxes2_bottom = bboxes1[:, 1] - bboxes1[:, 4], bboxes2[:, 1] -  bboxes2[:, 4] # (n, ), (m, )
+    bboxes1_top, bboxes2_top = bboxes1[:, 1], bboxes2[:, 1] # (n, ), (m, )
+    bboxes_bottom = torch.maximum(bboxes1_bottom[:, None], bboxes2_bottom[None, :]) # (n, m) 
+    bboxes_top = torch.minimum(bboxes1_top[:, None], bboxes2_top[None, :])
+    height_overlap =  torch.clamp(bboxes_top - bboxes_bottom, min=0)
 
-#     # 2. bev overlap
-#     bboxes1_x1y1 = bboxes1[:, [0, 2]] - bboxes1[:, [3, 5]] / 2
-#     bboxes1_x2y2 = bboxes1[:, [0, 2]] + bboxes1[:, [3, 5]] / 2
-#     bboxes2_x1y1 = bboxes2[:, [0, 2]] - bboxes2[:, [3, 5]] / 2
-#     bboxes2_x2y2 = bboxes2[:, [0, 2]] + bboxes2[:, [3, 5]] / 2
-#     bboxes1_bev = torch.cat([bboxes1_x1y1, bboxes1_x2y2, bboxes1[:, 6:]], dim=-1)
-#     bboxes2_bev = torch.cat([bboxes2_x1y1, bboxes2_x2y2, bboxes2[:, 6:]], dim=-1)
-#     bev_overlap = boxes_overlap_bev(bboxes1_bev, bboxes2_bev) # (n, m)
+    # 2. bev overlap
+    bboxes1_x1y1 = bboxes1[:, [0, 2]] - bboxes1[:, [3, 5]] / 2
+    bboxes1_x2y2 = bboxes1[:, [0, 2]] + bboxes1[:, [3, 5]] / 2
+    bboxes2_x1y1 = bboxes2[:, [0, 2]] - bboxes2[:, [3, 5]] / 2
+    bboxes2_x2y2 = bboxes2[:, [0, 2]] + bboxes2[:, [3, 5]] / 2
+    bboxes1_bev = torch.cat([bboxes1_x1y1, bboxes1_x2y2, bboxes1[:, 6:]], dim=-1)
+    bboxes2_bev = torch.cat([bboxes2_x1y1, bboxes2_x2y2, bboxes2[:, 6:]], dim=-1)
+    bev_overlap = boxes_overlap_bev(bboxes1_bev, bboxes2_bev) # (n, m)
 
-#     # 3. overlap and volume
-#     overlap = height_overlap * bev_overlap
-#     volume1 = bboxes1[:, 3] * bboxes1[:, 4] * bboxes1[:, 5]
-#     volume2 = bboxes2[:, 3] * bboxes2[:, 4] * bboxes2[:, 5]
-#     volume = volume1[:, None] + volume2[None, :] # (n, m)
+    # 3. overlap and volume
+    overlap = height_overlap * bev_overlap
+    volume1 = bboxes1[:, 3] * bboxes1[:, 4] * bboxes1[:, 5]
+    volume2 = bboxes2[:, 3] * bboxes2[:, 4] * bboxes2[:, 5]
+    volume = volume1[:, None] + volume2[None, :] # (n, m)
 
-#     # 4. iou
-#     iou = overlap / (volume - overlap + 1e-8)
+    # 4. iou
+    iou = overlap / (volume - overlap + 1e-8)
 
-#     return iou
+    return iou
 
 
-# def iou_bev(bboxes1, bboxes2):
-#     '''
-#     bboxes1: (n, 5), (x, z, w, h, theta)
-#     bboxes2: (m, 5)
-#     return: (n, m)
-#     '''
-#     bboxes1_x1y1 = bboxes1[:, :2] - bboxes1[:, 2:4] / 2
-#     bboxes1_x2y2 = bboxes1[:, :2] + bboxes1[:, 2:4] / 2
-#     bboxes2_x1y1 = bboxes2[:, :2] - bboxes2[:, 2:4] / 2
-#     bboxes2_x2y2 = bboxes2[:, :2] + bboxes2[:, 2:4] / 2
-#     bboxes1_bev = torch.cat([bboxes1_x1y1, bboxes1_x2y2, bboxes1[:, 4:]], dim=-1)
-#     bboxes2_bev = torch.cat([bboxes2_x1y1, bboxes2_x2y2, bboxes2[:, 4:]], dim=-1)
-#     bev_overlap = boxes_iou_bev(bboxes1_bev, bboxes2_bev) # (n, m)
+def iou_bev(bboxes1, bboxes2):
+    '''
+    bboxes1: (n, 5), (x, z, w, h, theta)
+    bboxes2: (m, 5)
+    return: (n, m)
+    '''
+    bboxes1_x1y1 = bboxes1[:, :2] - bboxes1[:, 2:4] / 2
+    bboxes1_x2y2 = bboxes1[:, :2] + bboxes1[:, 2:4] / 2
+    bboxes2_x1y1 = bboxes2[:, :2] - bboxes2[:, 2:4] / 2
+    bboxes2_x2y2 = bboxes2[:, :2] + bboxes2[:, 2:4] / 2
+    bboxes1_bev = torch.cat([bboxes1_x1y1, bboxes1_x2y2, bboxes1[:, 4:]], dim=-1)
+    bboxes2_bev = torch.cat([bboxes2_x1y1, bboxes2_x2y2, bboxes2[:, 4:]], dim=-1)
+    bev_overlap = boxes_iou_bev(bboxes1_bev, bboxes2_bev) # (n, m)
 
-#     return bev_overlap
+    return bev_overlap
 
 
 def keep_bbox_from_image_range(result, tr_velo_to_cam, r0_rect, P2, image_shape):
@@ -741,3 +742,33 @@ def get_frustum(bbox_image, C, near_clip=0.001, far_clip=100):
                             axis=0)  # [8, 2]
     ret_xyz = np.concatenate([ret_xy, z_points], axis=1)
     return ret_xyz
+
+class ToTensor(object):
+    def __init__(self, mean = (0, 0, 0), std = (1, 1, 1)):
+        self.mean = mean
+        self.std = std
+
+    def __call__(self, img_label):
+        """Convert a numpy image and label to a tensor.
+        Args:
+            img_label (_type_): A dictionary containing 'img' and 'label'. 'img' should be a numpy array of shape (H, W, C) and 'label' can be None or a numpy array.
+        Returns:
+            dict: dictionary with 'img' as a tensor of shape (C, H, W) and 'label' as a tensor if provided.
+        """
+        img, label = img_label['img'], img_label['label']
+        img = img.transpose(2, 0, 1).astype(np.float32).copy() # HWC to CHW
+        img = torch.from_numpy(img).div_(255.0) # Normalize to [0, 1]
+        dtype, device = img.dtype, img.device
+        mean = torch.as_tensor(self.mean, dtype=dtype, device=device)[:, None, None]
+        std = torch.as_tensor(self.std, dtype=dtype, device=device)[:, None, None]
+        img = img.sub_(mean).div_(std).clone()
+        
+        if label is not None:
+            label = torch.from_numpy(label.astype(np.int64).copy()).clone()
+        
+        return dict(img=img, label=label)
+    
+def preprocess_kitti(img):
+    to_tensor = ToTensor(mean=(0.36783523, 0.38706144, 0.3754649), std=(0.31566228, 0.31997792, 0.32575161)) 
+    img = to_tensor(dict(img=img, label=None))['img'].cuda()
+    return img

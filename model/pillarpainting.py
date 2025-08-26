@@ -1,5 +1,4 @@
 import numpy as np
-import pdb
 import os
 import cv2
 import torch
@@ -7,9 +6,8 @@ import torch.nn as nn
 import torch.nn.functional as F
 from config.config import config
 from utils.anchor import Anchors, anchor_target, anchors2bboxes
-from utils.process import image_to_tensor, project_point_to_camera, limit_period
-from build.voxel_module import Voxelization
-from build.iou3d_module import nms_cuda
+from utils import image_to_tensor, project_point_to_camera, limit_period
+from build import Voxelization, nms_cuda
 
 
 class PillarLayer(nn.Module):

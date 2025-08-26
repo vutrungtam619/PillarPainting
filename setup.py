@@ -7,7 +7,7 @@ setup(
     packages=find_packages(),
     ext_modules=[
         CUDAExtension(
-            name='voxel_op',
+            name='build.voxel_op',
             sources=[
                 'build/voxelization/voxelization.cpp',
                 'build/voxelization/voxelization_cpu.cpp',
@@ -16,7 +16,7 @@ setup(
             define_macros=[('WITH_CUDA', None)]
         ),
         CUDAExtension(
-            name='iou3d_op',
+            name='build.iou3d_op',
             sources=[
                 'build/iou3d/iou3d.cpp',
                 'build/iou3d/iou3d_kernel.cu',

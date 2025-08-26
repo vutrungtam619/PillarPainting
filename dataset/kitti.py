@@ -13,7 +13,7 @@ class Kitti(Dataset):
         assert split in ['train', 'val', 'trainval', 'test']
         self.data_root = data_root
         self.split = split
-        self.data_infos = read_pickle(os.path.join(project_root, 'dataset', 'velodyne_reduced', f'kitti_infos_{split}.pkl'))
+        self.data_infos = read_pickle(os.path.join(project_root, 'dataset', f'kitti_infos_{split}.pkl'))
         self.sorted_ids = list(self.data_infos.keys())
         self.CLASS = config['DATASET']['CLASS']
         

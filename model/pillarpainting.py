@@ -164,7 +164,7 @@ class PillarEncoder(nn.Module):
             
             calib = batched_calibs[i]
             prob_map = prob_maps_list[i]
-            H_orig, W_orig = prob_map.shape[2:]
+            H_orig, W_orig = prob_map.shape[1:]
             
             u, v = project_point_to_camera(point=cur_mean_center, calib=calib)
             u = torch.clamp(u, 0, W_orig - 1).long()

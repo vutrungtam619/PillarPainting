@@ -51,11 +51,11 @@ def create_data_info_pkl(data_root, data_type, label):
     with open(ids_file, 'r') as f:
         ids = [id.strip() for id in f.readlines()] # List of id in string 
 
+    split = 'training' if label else 'testing'
+    
     # create folder to save velodyne_reduced
     velodyne_reduced_folder = os.path.join(data_root, split, 'velodyne_reduced')
     os.makedirs(velodyne_reduced_folder, exist_ok=True)
-                
-    split = 'training' if label else 'testing'
             
     kitti_infos_dict = {}
     for id in tqdm(ids): 

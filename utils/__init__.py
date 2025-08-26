@@ -4,6 +4,6 @@ from .process import bbox_camera2lidar, bbox3d2bevcorners, box_collision_test, \
     keep_bbox_from_image_range, keep_bbox_from_lidar_range, \
     points_camera2lidar, setup_seed, remove_outside_points, points_in_bboxes_v2, \
     get_points_num_in_bbox, iou2d_nearest, iou2d, \
-    bbox3d2corners_camera, points_camera2image, image_to_tensor, ToTensor
+    bbox3d2corners_camera, points_camera2image, image_to_tensor, ToTensor, project_point_to_camera
 from .anchor import Anchors, anchors2bboxes, bboxes2deltas
 from .loss import Loss

@@ -167,10 +167,10 @@ class PillarEncoder(nn.Module):
             H_orig, W_orig = prob_map.shape[2:]
             
             u, v = project_point_to_camera(point=cur_mean_center, calib=calib)
-            u = torch.clamp(u, 0, W_orig - 1)
-            v = torch.clamp(v, 0, H_orig - 1)
+            u = torch.clamp(u, 0, W_orig - 1).long()
+            v = torch.clamp(v, 0, H_orig - 1).long()
             
-            prob = prob_map[:, v, u].T # (pi, 4)
+            prob = prob_map.permute(1, 2, 0)[v, u] # (pi, 4)
             
             prob_features.append(prob)
             

@@ -771,3 +771,36 @@ def image_to_tensor(img):
     to_tensor = ToTensor(mean=(0.36783523, 0.38706144, 0.3754649), std=(0.31566228, 0.31997792, 0.32575161)) 
     img = to_tensor(dict(img=img, label=None))['img'].cuda()
     return img
+
+def project_point_to_camera(self, point, calib, eps=1e-6):
+    """ Project mean centers of pillars to camera image coordinates.
+    Args: 
+        point (torch.Tensor): shape (P1 + P2 + ... + Pb, 3) where P1 + P2 + ... + Pb is the total number of pillars in the batch.
+        calib (dict): calibration dictionary containing 'Tr_velo_to_cam', 'R0_rect', and 'P2' matrices.
+        
+    Returns:
+        u (torch.Tensor): horizontal pixel coordinates in the camera image. Shape (P1 + P2 + ... + Pb,).
+        v (torch.Tensor): vertical pixel coordinates in the camera image. Shape (P1 + P2 + ... + Pb,).     
+    """              
+    device = point.device
+    N = point.shape[0]
+
+    # Convert calib matrices to 4x4 format for homogeneous computation
+    Tr = torch.as_tensor(calib['Tr_velo_to_cam'], device=device, dtype=torch.float32)
+    R0 = torch.as_tensor(calib['R0_rect'], device=device, dtype=torch.float32)
+    P2 = torch.as_tensor(calib['P2'], device=device, dtype=torch.float32)         
+
+    combined_transform = P2 @ R0 @ Tr  # (4x4)
+    
+    # Homogeneous coordinates
+    pts_velo_hom = torch.nn.functional.pad(point, (0, 1), value=1.0)  # (N,4)
+
+    # Transform
+    pts_cam = pts_velo_hom @ combined_transform.T  # (N,4)
+
+    # Project to image
+    z = pts_cam[:, 2].clamp(min=eps)
+    u = pts_cam[:, 0] / z
+    v = pts_cam[:, 1] / z
+
+    return u, v

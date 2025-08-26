@@ -7,7 +7,7 @@ import torch.nn.functional as F
 from config.config import config
 from utils.anchor import Anchors, anchor_target, anchors2bboxes
 from utils import image_to_tensor, project_point_to_camera, limit_period
-from build import Voxelization, nms_cuda
+from package import Voxelization, nms_cuda
 
 
 class PillarLayer(nn.Module):

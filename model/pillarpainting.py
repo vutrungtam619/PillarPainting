@@ -74,6 +74,7 @@ class SegmentLayer(nn.Module):
             img_tensor = image_to_tensor(img).unsqueeze(0) # (1, 3, H_orig, W_orig)
             img_tensor = F.interpolate(img_tensor, size=self.new_size, mode='bilinear', align_corners=False)
             imgs.append(img_tensor.squeeze(0))
+            del img
             
         batch_tensor = torch.stack(imgs, dim=0).to(self.device)  # (B, 3, H_new, W_new)
         
@@ -119,7 +120,7 @@ class PillarEncoder(nn.Module):
         )
         
         self.gate_fusion = nn.Sequential(
-            nn.Linear(68, 64),
+            nn.Linear(out_channel + 4, 64),
             nn.Sigmoid()
         )
         

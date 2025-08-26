@@ -21,19 +21,20 @@ def save_summary(writer, loss_dict, global_step, tag, lr=None, momentum=None):
 def main(args):
     setup_seed()
     
-    print("Loading dataset!...............................")
+    print("Loading dataset!..............................................")
     train_dataset = Kitti(data_root=args.data_root, split='train')
     val_dataset = Kitti(data_root=args.data_root, split='val')
     
     train_dataloader = get_dataloader(train_dataset, batch_size=args.batch_size, num_workers=args.num_workers, shuffle=True)
     val_dataloader = get_dataloader(val_dataset, batch_size=args.batch_size, num_workers=args.num_workers, shuffle=False)    
-    print("Loading dataset succesfully!...................")   
+    print("Loading dataset succesfully!..................................")   
     
     device = torch.device('cuda' if torch.cuda.is_available() and not args.no_cuda else 'cpu')    
     
-    print("Loading Bisenet and PillarPainting model!......")
+    print("Loading Bisenet and PillarPainting model!.....................")
     bisenet = BiSeNetV2().eval().to(device)
     pillarpainting = PillarPainting(bisenet=bisenet).to(device)
+    print("Finished loading Bisenet and PillarPainting model!............")
     
     loss_func = Loss()
     
@@ -49,7 +50,7 @@ def main(args):
         checkpoint_path = os.path.join(args.checkpoint_dir, checkpoint_exist[0])
         checkpoint_dict = torch.load(checkpoint_path)
         
-        start_epoch = int(checkpoint_dict['epoch'])
+        start_epoch = int(checkpoint_dict['epoch']) 
         print(f"Founding a checkpoint!... Continue training from epoch {start_epoch}.......")
         
         pillarpainting.load_state_dict(checkpoint_dict['checkpoint'])
@@ -62,7 +63,7 @@ def main(args):
     writer = SummaryWriter(args.log_dir)
     
     for epoch in range(start_epoch, args.epoch):
-        print('='*20, f'Epoch {epoch+1}', '='*20)
+        print('='*20, f'Epoch {epoch}', '='*20)
         pillarpainting.train()
         train_step, val_step = 0, 0   
         
@@ -179,7 +180,7 @@ def main(args):
                     batched_calibs=batched_calibs
                 )     
                 
-                bbox_cls_pred = bbox_cls_pred.permute(0, 2, 3, 1).reshape(-1, args.nclasses)
+                bbox_cls_pred = bbox_cls_pred.permute(0, 2, 3, 1).reshape(-1, args.num_classes)
                 bbox_pred = bbox_pred.permute(0, 2, 3, 1).reshape(-1, 7)
                 bbox_dir_cls_pred = bbox_dir_cls_pred.permute(0, 2, 3, 1).reshape(-1, 2)
 
@@ -190,7 +191,7 @@ def main(args):
                 batched_dir_labels = anchor_target_dict['batched_dir_labels'].reshape(-1)
                 # batched_dir_labels_weights = anchor_target_dict['batched_dir_labels_weights'].reshape(-1)
                 
-                pos_idx = (batched_bbox_labels >= 0) & (batched_bbox_labels < args.nclasses)
+                pos_idx = (batched_bbox_labels >= 0) & (batched_bbox_labels < args.num_classes)
                 bbox_pred = bbox_pred[pos_idx]
                 batched_bbox_reg = batched_bbox_reg[pos_idx]
                 # sin(a - b) = sin(a)*cos(b) - cos(a)*sin(b)
@@ -199,9 +200,9 @@ def main(args):
                 bbox_dir_cls_pred = bbox_dir_cls_pred[pos_idx]
                 batched_dir_labels = batched_dir_labels[pos_idx]
 
-                num_cls_pos = (batched_bbox_labels < args.nclasses).sum()
+                num_cls_pos = (batched_bbox_labels < args.num_classes).sum()
                 bbox_cls_pred = bbox_cls_pred[batched_label_weights > 0]
-                batched_bbox_labels[batched_bbox_labels < 0] = args.nclasses
+                batched_bbox_labels[batched_bbox_labels < 0] = args.num_classes
                 batched_bbox_labels = batched_bbox_labels[batched_label_weights > 0]
 
                 loss_dict = loss_func(

@@ -1,5 +1,4 @@
 import numpy as np
-import os
 import pickle
 
 def read_points(file_path, dim=4):

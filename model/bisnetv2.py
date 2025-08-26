@@ -1,4 +1,3 @@
-
 import torch
 import torch.nn as nn
 import torch.nn.functional as F
@@ -321,7 +320,7 @@ class CustomArgMax(torch.autograd.Function):
 
 class BiSeNetV2(nn.Module):
 
-    def __init__(self, n_classes=config.BISENET['num_classes'], aux_mode=config.BISENET['aux_mode']):
+    def __init__(self, n_classes=config['BISENET']['num_classes'], aux_mode=config['BISENET']['aux_mode']):
         super(BiSeNetV2, self).__init__()
         self.aux_mode = aux_mode
         self.detail = DetailBranch()

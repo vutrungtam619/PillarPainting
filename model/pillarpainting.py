@@ -82,10 +82,10 @@ class SegmentLayer(nn.Module):
             outputs = self.bisenet(batch_tensor)[0] # (B, C, H_new, W_new)
             
         probs = F.softmax(outputs, dim=1)
-        class_map = {'car': [13, 14, 15], 'pedestrian': [11], 'cyclist': [18]}
-        conf_car = probs[:, class_map['car'], :, :].sum(dim=1)
-        conf_pedestrian = probs[:, class_map['pedestrian'], :, :].sum(dim=1)
-        conf_cyclist = probs[:, class_map['cyclist'], :, :].sum(dim=1)
+        class_map = {'Car': [13, 14, 15], 'Pedestrian': [11], 'Cyclist': [18]}
+        conf_car = probs[:, class_map['Car'], :, :].sum(dim=1)
+        conf_pedestrian = probs[:, class_map['Pedestrian'], :, :].sum(dim=1)
+        conf_cyclist = probs[:, class_map['Cyclist'], :, :].sum(dim=1)
         conf_dontcare = probs.sum(dim=1) - (conf_car + conf_pedestrian + conf_cyclist)
 
         prob_map_batch = torch.stack([conf_car, conf_pedestrian, conf_cyclist, conf_dontcare], dim=1)  # (B, 4, H_new, W_new)
@@ -312,12 +312,12 @@ class Head(nn.Module):
 class PillarPainting(nn.Module):
     def __init__(
         self,
-        nclasses=config.PILLARPAINTING['num_classes'], 
-        voxel_size=config.PILLARPAINTING['voxel_size'],
-        point_cloud_range=config.PILLARPAINTING['pc_range'],
-        max_num_points=config.PILLARPAINTING['max_points'],
-        max_voxels=config.PILLARPAINTING['max_voxels'],
-        bisenet = None
+        nclasses=config['PILLARPAINTING']['num_classes'], 
+        voxel_size=config['PILLARPAINTING']['voxel_size'],
+        point_cloud_range=config['PILLARPAINTING']['pc_range'],
+        max_num_points=config['PILLARPAINTING']['max_points'],
+        max_voxels=config['PILLARPAINTING']['max_voxels'],
+        bisenet=None
     ):
         super(PillarPainting, self).__init__()
         
@@ -332,7 +332,7 @@ class PillarPainting(nn.Module):
         
         self.segment_layer = SegmentLayer(
             bisenet=bisenet,
-            new_size=config.BISENET['new_size']
+            new_size=config['BISENET']['new_size']
         )
         
         self.pillar_encoder = PillarEncoder(
@@ -356,14 +356,14 @@ class PillarPainting(nn.Module):
         
         self.head = Head(
             in_channel=384, 
-            n_anchors=2*nclasses, 
+            n_anchors=2 * nclasses, 
             n_classes=nclasses
         )
         
         self.anchors_generator = Anchors(
-            ranges=config.ANCHOR['ranges'], 
-            sizes=config.ANCHOR['sizes'], 
-            rotations=config.ANCHOR['rotations']
+            ranges=config['ANCHOR']['ranges'], 
+            sizes=config['ANCHOR']['sizes'], 
+            rotations=config['ANCHOR']['rotations']
         )
         
         # train

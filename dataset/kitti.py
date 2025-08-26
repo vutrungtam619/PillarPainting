@@ -1,7 +1,5 @@
 import numpy as np
 import os
-import torch
-import sys
 from config.config import config
 from torch.utils.data import Dataset
 from utils.io import read_pickle, read_points
@@ -17,7 +15,7 @@ class Kitti(Dataset):
         self.split = split
         self.data_infos = read_pickle(os.path.join(project_root, 'dataset', 'velodyne_reduced', f'kitti_infos_{split}.pkl'))
         self.sorted_ids = list(self.data_infos.keys())
-        self.CLASS = config.DATASET['CLASS']
+        self.CLASS = config['DATASET']['CLASS']
         
     def remove_dontcare(self, annos_info):
         keep_ids = [i for i, name in enumerate(annos_info['name']) if name != 'DontCare']
@@ -57,7 +55,7 @@ class Kitti(Dataset):
             'calib_info': calib_info
         }
         
-        data_dict = point_range_filter(data_dict=data_dict, point_range=config.PILLARPAINTING['pc_range'])
+        data_dict = point_range_filter(data_dict=data_dict, point_range=config['PILLARPAINTING']['pc_range'])
         
         return data_dict
     

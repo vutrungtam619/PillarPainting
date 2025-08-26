@@ -1,4 +1,3 @@
-import pdb
 import numpy as np
 import torch
 from utils import limit_period, iou2d_nearest

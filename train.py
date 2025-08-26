@@ -29,7 +29,7 @@ def main(args):
     val_dataloader = get_dataloader(val_dataset, batch_size=args.batch_size, num_workers=args.num_workers, shuffle=False)    
     print("Loading dataset succesfully!..................................")   
     
-    device = torch.device('cuda' if torch.cuda.is_available() and not args.no_cuda else 'cpu')    
+    device = torch.device('cuda' if torch.cuda.is_available() else 'cpu')    
     
     print("Loading Bisenet and PillarPainting model!.....................")
     bisenet = BiSeNetV2().eval().to(device)

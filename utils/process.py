@@ -249,7 +249,7 @@ def get_points_num_in_bbox(points, R0_rect, Tr_velo_to_cam, dimensions, location
     points_num = np.concatenate([points_num, non_valid_points_num], axis=0)
     return np.array(points_num, dtype=np.int32)
 
-def remove_points_out_image(points, R0_rect, Tr_velo_to_cam, P2, image_shape):
+def remove_outside_points(points, R0_rect, Tr_velo_to_cam, P2, image_shape):
     """ Remove points which are outside of image
     Args:
         points [np.ndarray float32, (N, 4)]: total points

@@ -4,8 +4,8 @@ import cv2
 import sys
 import numpy as np
 from tqdm import tqdm
-from utils.io import read_calib, read_points, read_label, write_points, write_pickle
-from utils.process import remove_points_out_image, get_points_num_in_bbox
+from utils import read_calib, read_points, read_label, write_points, write_pickle
+from utils import remove_outside_points, get_points_num_in_bbox
 
 project_root = os.path.dirname(os.path.abspath(__file__))
 sys.path.append(project_root)
@@ -55,7 +55,6 @@ def create_data_info_pkl(data_root, data_type, label):
     
     # create folder to save velodyne_reduced
     velodyne_reduced_folder = os.path.join(project_root, 'dataset', 'velodyne_reduced', split)
-    os.makedirs(velodyne_reduced_folder, exist_ok=True)
             
     kitti_infos_dict = {}
     for id in tqdm(ids): 
@@ -77,7 +76,7 @@ def create_data_info_pkl(data_root, data_type, label):
         
         # read lidar point and filter the point outside of image frustum
         lidar_points = read_points(lidar_path)
-        reduced_points = remove_points_out_image(lidar_points, calib_dict['R0_rect'], calib_dict['Tr_velo_to_cam'], calib_dict['P2'], image_shape)
+        reduced_points = remove_outside_points(lidar_points, calib_dict['R0_rect'], calib_dict['Tr_velo_to_cam'], calib_dict['P2'], image_shape)
         
         # write the reduced_points to bin file
         velodyne_reduced_file = os.path.join(velodyne_reduced_folder, f'{id}.bin')

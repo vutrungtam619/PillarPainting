@@ -3,6 +3,7 @@ import os
 import cv2
 import sys
 import numpy as np
+import time
 from tqdm import tqdm
 from utils import read_calib, read_points, read_label, write_points, write_pickle
 from utils import remove_outside_points, get_points_num_in_bbox
@@ -59,6 +60,7 @@ def create_data_info_pkl(data_root, data_type, label):
             
     kitti_infos_dict = {}
     for id in tqdm(ids): 
+        loop_start = time.time()
         cur_info_dict = {}
         image_path = os.path.join(data_root, split, 'image_2', f'{id}.png')
         lidar_path = os.path.join(data_root, split, 'velodyne', f'{id}.bin')
@@ -93,6 +95,8 @@ def create_data_info_pkl(data_root, data_type, label):
             cur_info_dict['annos'] = annotation_dict
             
         kitti_infos_dict[int(id)] = cur_info_dict
+        loop_end = time.time()
+        print(f"Time for loop {id}: {loop_end - loop_start:.3f} s")
     
     save_pkl_path = os.path.join(data_root, f'kitti_infos_{data_type}.pkl')
     write_pickle(save_pkl_path, kitti_infos_dict)       

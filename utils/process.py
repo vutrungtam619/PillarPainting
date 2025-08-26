@@ -767,7 +767,7 @@ class ToTensor(object):
         
         return dict(img=img, label=label)
     
-def preprocess_kitti(img):
+def image_to_tensor(img):
     to_tensor = ToTensor(mean=(0.36783523, 0.38706144, 0.3754649), std=(0.31566228, 0.31997792, 0.32575161)) 
     img = to_tensor(dict(img=img, label=None))['img'].cuda()
     return img

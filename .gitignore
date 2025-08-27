@@ -1,3 +1,9 @@
 __pycache__
 *.egg-info
+checkpoints/*.pth
+dataset/*.pkl
+package/*.pyd
+dataset/velodyne_reduced/training
 build/
+image/
+.vscode/

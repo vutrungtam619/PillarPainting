@@ -16,8 +16,8 @@ config = {
         'num_classes': 3,
         'pc_range': [0, -39.68, -3, 69.12, 39.68, 1],
         'voxel_size': [0.16, 0.16, 4],
-        'max_voxels': (12000, 40000),
-        'max_points': 32 
+        'max_voxels': (16000, 40000),
+        'max_points': 50 
     },
 
     'BISENET' : {
@@ -38,9 +38,9 @@ config = {
         'batch_size': 8,
         'num_workers': 4,
         'init_lr': 0.00033,
-        'epoch': 100,
+        'epoch': 150,
         'ckpt_freq': 2,
-        'log_freq': 25,
+        'log_freq': 50,
         'log_dir': os.path.join(project_root, 'log'),
     }    
 }

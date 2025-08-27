@@ -3,6 +3,7 @@ import cv2
 import numpy as np
 import os
 import torch
+import time
 
 from utils import setup_seed, read_points, read_calib, read_label, \
     keep_bbox_from_image_range, keep_bbox_from_lidar_range, vis_pc, \
@@ -117,11 +118,11 @@ def main(args):
         
 if __name__ == '__main__':
     parser = argparse.ArgumentParser(description='Configuration Parameters')
-    parser.add_argument('--ckpt', default='checkpoints\epoch_10.pth')
-    parser.add_argument('--pc_path', default=r'dataset\velodyne_reduced\training\000074.bin')
-    parser.add_argument('--calib_path', default=r'kitti3d200\training\calib\000074.txt')
-    parser.add_argument('--gt_path', default=r'kitti3d200\training\label_2\000074.txt')
-    parser.add_argument('--img_path', default=r'kitti3d200\training\image_2\000074.png')
+    parser.add_argument('--ckpt', default='checkpoints\epoch_100.pth')
+    parser.add_argument('--pc_path', default=r'dataset\velodyne_reduced\training\000039.bin')
+    parser.add_argument('--calib_path', default=r'kitti\training\calib\000039.txt')
+    parser.add_argument('--gt_path', default=r'kitti\training\label_2\000039.txt')
+    parser.add_argument('--img_path', default=r'kitti\training\image_2\000039.png')
     args = parser.parse_args()
 
     main(args)

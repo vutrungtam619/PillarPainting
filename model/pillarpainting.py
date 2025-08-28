@@ -116,16 +116,19 @@ class PillarEncoder(nn.Module):
         
         self.semantic_proj = nn.Sequential(
             nn.LayerNorm(4),
-            nn.Linear(4, 32),
+            nn.Linear(4, out_channel),
             nn.ReLU(inplace=True),
             nn.Dropout(0.1),
-            nn.Linear(32, out_channel)
+            nn.Linear(out_channel, out_channel),
+            nn.LayerNorm(out_channel)
         )
         
         self.gate_fusion = nn.Sequential(
-            nn.Linear(out_channel + 4, 128),
+            nn.Linear(out_channel + 4, out_channel * 2),
+            nn.LayerNorm(out_channel * 2),
             nn.ReLU(inplace=True),
-            nn.Linear(128, out_channel),
+            nn.Dropout(0.1),
+            nn.Linear(out_channel * 2, out_channel),
             nn.Sigmoid()                
         )
         

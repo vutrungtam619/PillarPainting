@@ -123,7 +123,7 @@ def main(args):
 
 if __name__ == '__main__':
     parser = argparse.ArgumentParser()
-    parser.add_argument('--ckpt', default='checkpoints/epoch_100.pth')
+    parser.add_argument('--ckpt', default='checkpoints/epoch_52.pth')
     parser.add_argument('--pc_dir', default='dataset/velodyne_reduced/training')
     parser.add_argument('--calib_dir', default='kitti/training/calib')
     parser.add_argument('--gt_dir', default='kitti/training/label_2')

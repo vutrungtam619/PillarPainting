@@ -4,6 +4,7 @@ checkpoints/*.pth
 dataset/*.pkl
 package/*.pyd
 dataset/velodyne_reduced/training
+log/events.out.tfevents*
 build/
 image/
 .vscode/

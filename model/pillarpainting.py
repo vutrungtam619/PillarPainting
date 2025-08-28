@@ -110,18 +110,23 @@ class PillarEncoder(nn.Module):
         
         self.conv = nn.Sequential(
             nn.Conv1d(in_channel, out_channel, 1, bias=False),
-            nn.BatchNorm1d(out_channel, eps=1e-3, momentum=0.01)
+            nn.BatchNorm1d(out_channel, eps=1e-3, momentum=0.01),
+            nn.ReLU(inplace=True)
         )
         
         self.semantic_proj = nn.Sequential(
+            nn.LayerNorm(4),
             nn.Linear(4, 32),
-            nn.ReLU(),
-            nn.Linear(32, 64)
+            nn.ReLU(inplace=True),
+            nn.Dropout(0.1),
+            nn.Linear(32, out_channel)
         )
         
         self.gate_fusion = nn.Sequential(
-            nn.Linear(out_channel + 4, 64),
-            nn.Sigmoid()
+            nn.Linear(out_channel + 4, 128),
+            nn.ReLU(inplace=True),
+            nn.Linear(128, out_channel),
+            nn.Sigmoid()                
         )
         
     def forward(self, pillars, coors_batch, npoints_per_pillar, prob_maps_list, batched_calibs, batch_size):
@@ -374,10 +379,10 @@ class PillarPainting(nn.Module):
         ]
 
         # val and test
-        self.nms_pre = 300
+        self.nms_pre = 100
         self.nms_thr = 0.1
         self.score_thr = 0.1
-        self.max_num = 50
+        self.max_num = 25
 
     def get_predicted_bboxes_single(self, bbox_cls_pred, bbox_pred, bbox_dir_cls_pred, anchors):
         '''

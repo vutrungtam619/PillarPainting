@@ -38,8 +38,8 @@ def main(args):
     loss_func = Loss()
     
     max_iters = len(train_dataloader) * args.epoch    
-    optimizer = torch.optim.AdamW(pillarpainting.parameters(), lr=args.init_lr, betas=(0.95, 0.99), weight_decay=0.01)
-    scheduler = torch.optim.lr_scheduler.OneCycleLR(optimizer, max_lr=args.init_lr*10, total_steps=max_iters, pct_start=0.4, anneal_strategy='cos', cycle_momentum=True, base_momentum=0.85, max_momentum=0.95, div_factor=10)    
+    optimizer = torch.optim.AdamW(pillarpainting.parameters(), lr=args.init_lr, betas=(0.95, 0.99), weight_decay=0.05)
+    scheduler = torch.optim.lr_scheduler.OneCycleLR(optimizer, max_lr=args.init_lr*4, total_steps=max_iters, pct_start=0.3, anneal_strategy='cos', cycle_momentum=True, base_momentum=0.85, max_momentum=0.95, div_factor=10)    
     
     start_epoch = 0
     
@@ -147,11 +147,6 @@ def main(args):
             }
             new_ckpt_file = os.path.join(args.checkpoint_dir, f'epoch_{epoch+1}.pth')
             torch.save(save_dict, new_ckpt_file)
-            # Remove older checkpoint
-            for file in os.listdir(args.checkpoint_dir):
-                file_pth = os.path.join(args.checkpoint_dir, file)
-                if file_pth != new_ckpt_file and file.endswith('.pth'):
-                    os.remove(file_pth)
                     
         if (epoch % 2 == 0):
             continue

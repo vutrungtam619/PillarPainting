@@ -121,7 +121,7 @@ def main(args):
 
 if __name__ == '__main__':
     parser = argparse.ArgumentParser(description='Dataset infomation')
-    parser.add_argument('--data_root', default='', help='your data root for kitti')
+    parser.add_argument('--data_root', default='kitti', help='your data root for kitti')
     args = parser.parse_args()
 
     main(args)

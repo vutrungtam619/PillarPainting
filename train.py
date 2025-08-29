@@ -31,7 +31,9 @@ def main(args):
     device = torch.device('cuda' if torch.cuda.is_available() else 'cpu')    
     
     print("Loading Bisenet and PillarPainting model!.....................")
-    bisenet = BiSeNetV2().eval().to(device)
+    bisenet = BiSeNetV2()
+    bisenet.load_state_dict(torch.load(args.bisenet_ckpt))
+    bisenet.to(device)
     pillarpainting = PillarPainting(bisenet=bisenet).to(device)
     print("Finished loading Bisenet and PillarPainting model!............")
     
@@ -39,7 +41,7 @@ def main(args):
     
     max_iters = len(train_dataloader) * args.epoch    
     optimizer = torch.optim.AdamW(pillarpainting.parameters(), lr=args.init_lr, betas=(0.95, 0.99), weight_decay=0.05)
-    scheduler = torch.optim.lr_scheduler.OneCycleLR(optimizer, max_lr=args.init_lr*4, total_steps=max_iters, pct_start=0.3, anneal_strategy='cos', cycle_momentum=True, base_momentum=0.85, max_momentum=0.95, div_factor=10)    
+    scheduler = torch.optim.lr_scheduler.OneCycleLR(optimizer, max_lr=args.init_lr*4, total_steps=max_iters, pct_start=0.4, anneal_strategy='cos', cycle_momentum=True, base_momentum=0.85, max_momentum=0.95, div_factor=10)    
     
     start_epoch = 0
     
@@ -227,6 +229,7 @@ if __name__ == '__main__':
     parser.add_argument('--ckpt_freq', default=config['TRAINING']['ckpt_freq'])
     parser.add_argument('--log_freq', default=config['TRAINING']['log_freq'])
     parser.add_argument('--log_dir', default=config['TRAINING']['log_dir'])
+    parser.add_argument('--bisenet_ckpt', default=config['BISENET']['bisenet_ckpt'])
     args = parser.parse_args()
     
     main(args)

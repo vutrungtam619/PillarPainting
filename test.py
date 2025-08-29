@@ -39,7 +39,9 @@ def main(args):
     
     pcd_limit_range = np.array([0, -40, -3, 70.4, 40, 0.0], dtype=np.float32)
     
-    bisenet = BiSeNetV2().eval().to(device)
+    bisenet = BiSeNetV2()
+    bisenet.load_state_dict(torch.load(args.bisenet_ckpt))
+    bisenet.to(device)
     model = PillarPainting(nclasses=len(CLASSES), bisenet=bisenet).to(device)
     checkpoint_dict = torch.load(args.ckpt)
     model.load_state_dict(checkpoint_dict['checkpoint'])

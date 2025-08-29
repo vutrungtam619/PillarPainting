@@ -108,7 +108,9 @@ def main(args):
     os.makedirs(save_dir, exist_ok=True)
 
     # Load model
-    bisenet = BiSeNetV2().eval().to(device)
+    bisenet = BiSeNetV2()
+    bisenet.load_state_dict(torch.load(args.bisenet_ckpt))
+    bisenet.to(device)
     model = PillarPainting(nclasses=len(CLASSES), bisenet=bisenet).to(device)
     checkpoint_dict = torch.load(args.ckpt)
     model.load_state_dict(checkpoint_dict['checkpoint'])
@@ -123,12 +125,12 @@ def main(args):
 
 if __name__ == '__main__':
     parser = argparse.ArgumentParser()
-    parser.add_argument('--ckpt', default='checkpoints/epoch_20.pth')
+    parser.add_argument('--ckpt', default='checkpoints/epoch_50.pth')
     parser.add_argument('--pc_dir', default='dataset/velodyne_reduced/training')
     parser.add_argument('--calib_dir', default='kitti/training/calib')
     parser.add_argument('--gt_dir', default='kitti/training/label_2')
     parser.add_argument('--img_dir', default='kitti/training/image_2')
-    parser.add_argument('--start_idx', type=int, default=0, help='Sample bắt đầu')
+    parser.add_argument('--start_idx', type=int, default=115, help='Sample bắt đầu')
     args = parser.parse_args()
 
     main(args)

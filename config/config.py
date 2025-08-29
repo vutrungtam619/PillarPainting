@@ -24,7 +24,7 @@ config = {
         'new_size': (384, 1248),
         'num_classes': 19,
         'aux_mode': 'eval',
-        'bisenet_ckpt': 'bisenet_ckpt\model_final_v2_city.pth'
+        'bisenet_ckpt': os.path.join(project_root, 'bisenet_ckpt', 'model_final_v2_city.pth')
     },
 
     'ANCHOR' : {

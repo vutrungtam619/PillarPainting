@@ -41,6 +41,7 @@ def main(args):
     
     bisenet = BiSeNetV2()
     bisenet.load_state_dict(torch.load(args.bisenet_ckpt))
+    bisenet.aux_mode = 'eval'
     bisenet.to(device)
     model = PillarPainting(nclasses=len(CLASSES), bisenet=bisenet).to(device)
     checkpoint_dict = torch.load(args.ckpt)

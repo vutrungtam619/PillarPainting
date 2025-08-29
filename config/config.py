@@ -23,7 +23,7 @@ config = {
     'BISENET' : {
         'new_size': (384, 1248),
         'num_classes': 19,
-        'aux_mode': 'eval',
+        'aux_mode': 'train',
         'bisenet_ckpt': os.path.join(project_root, 'bisenet_ckpt', 'model_final_v2_city.pth')
     },
 

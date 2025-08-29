@@ -33,7 +33,7 @@ def main(args):
     print("Loading Bisenet and PillarPainting model!.....................")
     bisenet = BiSeNetV2()
     bisenet.load_state_dict(torch.load(args.bisenet_ckpt))
-    bisenet.aux_mode = 'eval'
+    bisenet.aux_mode = config['BISENET']['aux_mode']
     bisenet.to(device)
     pillarpainting = PillarPainting(bisenet=bisenet).to(device)
     print("Finished loading Bisenet and PillarPainting model!............")

@@ -23,7 +23,7 @@ config = {
     'BISENET' : {
         'new_size': (384, 1248),
         'num_classes': 19,
-        'aux_mode': 'train',
+        'aux_mode': 'eval',
         'bisenet_ckpt': os.path.join(project_root, 'bisenet_ckpt', 'model_final_v2_city.pth')
     },
 
@@ -39,9 +39,9 @@ config = {
         'batch_size': 8,
         'num_workers': 4,
         'init_lr': 0.00033,
-        'epoch': 20,
+        'epoch': 50,
         'ckpt_freq': 2,
-        'log_freq': 25,
-        'log_dir': os.path.join(project_root, 'log'),
+        'log_freq': 10,
+        'log_dir': os.path.join(project_root, 'log')
     }    
 }

@@ -3,6 +3,7 @@ import cv2
 import numpy as np
 import os
 import torch
+from config.config import config
 
 from utils import read_points, read_calib, read_label, \
     keep_bbox_from_image_range, keep_bbox_from_lidar_range, \
@@ -110,12 +111,13 @@ def main(args):
     # Load model
     bisenet = BiSeNetV2()
     bisenet.load_state_dict(torch.load(args.bisenet_ckpt))
-    bisenet.aux_mode = 'eval'
+    bisenet.aux_mode = config['BISENET']['aux_mode']
     bisenet.to(device)
     model = PillarPainting(nclasses=len(CLASSES), bisenet=bisenet).to(device)
     checkpoint_dict = torch.load(args.ckpt)
     model.load_state_dict(checkpoint_dict['checkpoint'])
     model.eval()
+    print("Loading model complete!")
 
     idx = args.start_idx
     while True:
@@ -126,12 +128,13 @@ def main(args):
 
 if __name__ == '__main__':
     parser = argparse.ArgumentParser()
-    parser.add_argument('--ckpt', default='checkpoints/epoch_50.pth')
+    parser.add_argument('--ckpt', default='checkpoints/epoch_20.pth')
     parser.add_argument('--pc_dir', default='dataset/velodyne_reduced/training')
     parser.add_argument('--calib_dir', default='kitti/training/calib')
     parser.add_argument('--gt_dir', default='kitti/training/label_2')
     parser.add_argument('--img_dir', default='kitti/training/image_2')
-    parser.add_argument('--start_idx', type=int, default=115, help='Sample bắt đầu')
+    parser.add_argument('--start_idx', type=int, default=0, help='Sample bắt đầu')
+    parser.add_argument('--bisenet_ckpt', default=config['BISENET']['bisenet_ckpt'])
     args = parser.parse_args()
 
     main(args)

@@ -4,6 +4,7 @@ import numpy as np
 import os
 import torch
 import time
+from config.config import config
 
 from utils import setup_seed, read_points, read_calib, read_label, \
     keep_bbox_from_image_range, keep_bbox_from_lidar_range, vis_pc, \
@@ -41,7 +42,7 @@ def main(args):
     
     bisenet = BiSeNetV2()
     bisenet.load_state_dict(torch.load(args.bisenet_ckpt))
-    bisenet.aux_mode = 'eval'
+    bisenet.aux_mode = config['BISENET']['aux_mode']
     bisenet.to(device)
     model = PillarPainting(nclasses=len(CLASSES), bisenet=bisenet).to(device)
     checkpoint_dict = torch.load(args.ckpt)

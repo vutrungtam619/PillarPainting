@@ -34,6 +34,8 @@ def main(args):
     bisenet = BiSeNetV2()
     bisenet.load_state_dict(torch.load(args.bisenet_ckpt))
     bisenet.aux_mode = config['BISENET']['aux_mode']
+    for param in bisenet.parameters():
+        param.requires_grad = False  # Freeze BiSeNet
     bisenet.to(device)
     pillarpainting = PillarPainting(bisenet=bisenet).to(device)
     print("Finished loading Bisenet and PillarPainting model!............")
@@ -41,8 +43,8 @@ def main(args):
     loss_func = Loss()
     
     max_iters = len(train_dataloader) * args.epoch    
-    optimizer = torch.optim.AdamW(pillarpainting.parameters(), lr=args.init_lr, betas=(0.95, 0.99), weight_decay=0.05)
-    scheduler = torch.optim.lr_scheduler.OneCycleLR(optimizer, max_lr=args.init_lr*4, total_steps=max_iters, pct_start=0.4, anneal_strategy='cos', cycle_momentum=True, base_momentum=0.85, max_momentum=0.95, div_factor=10)    
+    optimizer = torch.optim.AdamW(pillarpainting.parameters(), lr=args.init_lr, betas=(0.95, 0.99), weight_decay=0.01)
+    scheduler = torch.optim.lr_scheduler.OneCycleLR(optimizer, max_lr=args.init_lr*2, total_steps=max_iters, pct_start=0.4, anneal_strategy='cos', cycle_momentum=True, base_momentum=0.85, max_momentum=0.95, div_factor=10)    
     
     start_epoch = 0
     
@@ -109,8 +111,11 @@ def main(args):
             bbox_pred = bbox_pred[pos_idx]
             batched_bbox_reg = batched_bbox_reg[pos_idx]
             # sin(a - b) = sin(a)*cos(b) - cos(a)*sin(b)
-            bbox_pred[:, -1] = torch.sin(bbox_pred[:, -1].clone()) * torch.cos(batched_bbox_reg[:, -1].clone())
-            batched_bbox_reg[:, -1] = torch.cos(bbox_pred[:, -1].clone()) * torch.sin(batched_bbox_reg[:, -1].clone())
+            a = bbox_pred[:, -1].clone()
+            b = batched_bbox_reg[:, -1].clone()
+            bbox_pred[:, -1] = torch.sin(a) * torch.cos(b)
+            batched_bbox_reg[:, -1] = torch.cos(a) * torch.sin(b)
+            
             bbox_dir_cls_pred = bbox_dir_cls_pred[pos_idx]
             batched_dir_labels = batched_dir_labels[pos_idx]
 
@@ -192,8 +197,10 @@ def main(args):
                 bbox_pred = bbox_pred[pos_idx]
                 batched_bbox_reg = batched_bbox_reg[pos_idx]
                 # sin(a - b) = sin(a)*cos(b) - cos(a)*sin(b)
-                bbox_pred[:, -1] = torch.sin(bbox_pred[:, -1]) * torch.cos(batched_bbox_reg[:, -1])
-                batched_bbox_reg[:, -1] = torch.cos(bbox_pred[:, -1]) * torch.sin(batched_bbox_reg[:, -1])
+                a = bbox_pred[:, -1].clone()
+                b = batched_bbox_reg[:, -1].clone()
+                bbox_pred[:, -1] = torch.sin(a) * torch.cos(b)
+                batched_bbox_reg[:, -1] = torch.cos(a) * torch.sin(b)
                 bbox_dir_cls_pred = bbox_dir_cls_pred[pos_idx]
                 batched_dir_labels = batched_dir_labels[pos_idx]
 

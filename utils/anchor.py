@@ -76,7 +76,7 @@ def anchors2bboxes(anchors, deltas):
     da = torch.sqrt(anchors[:, 3] ** 2 + anchors[:, 4] ** 2)
     x = deltas[:, 0] * da + anchors[:, 0]
     y = deltas[:, 1] * da + anchors[:, 1]
-    z = deltas[:, 2] * anchors[:, 5] + anchors[:, 2] + anchors[:, 5] / 2
+    z = deltas[:, 2] * anchors[:, 5] + (anchors[:, 2] + anchors[:, 5] / 2)
 
     w = anchors[:, 3] * torch.exp(deltas[:, 3])
     l = anchors[:, 4] * torch.exp(deltas[:, 4])

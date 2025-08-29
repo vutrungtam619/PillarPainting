@@ -17,7 +17,7 @@ config = {
         'pc_range': [0, -39.68, -3, 69.12, 39.68, 1],
         'voxel_size': [0.16, 0.16, 4],
         'max_voxels': (16000, 40000),
-        'max_points': 50 
+        'max_points': 32
     },
 
     'BISENET' : {
@@ -38,10 +38,10 @@ config = {
         'checkpoint_dir': os.path.join(project_root, 'checkpoints'),
         'batch_size': 8,
         'num_workers': 4,
-        'init_lr': 0.00033,
-        'epoch': 80,
+        'init_lr': 0.00025,
+        'epoch': 160,
         'ckpt_freq': 2,
-        'log_freq': 10,
+        'log_freq': 25,
         'log_dir': os.path.join(project_root, 'log')
     }    
 }

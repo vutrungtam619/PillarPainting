@@ -120,11 +120,11 @@ class PillarEncoder(nn.Module):
             nn.ReLU(inplace=True),
             nn.Dropout(0.1),
             nn.Linear(out_channel, out_channel),
-            nn.LayerNorm(out_channel)
+            nn.ReLU(inplace=True)
         )
         
         self.gate_fusion = nn.Sequential(
-            nn.Linear(out_channel + 4, out_channel * 2),
+            nn.Linear(out_channel * 2, out_channel * 2),
             nn.LayerNorm(out_channel * 2),
             nn.ReLU(inplace=True),
             nn.Dropout(0.1),
@@ -186,7 +186,7 @@ class PillarEncoder(nn.Module):
         
         semantic_features = self.semantic_proj(prob_features) # (p1 + p2 + ... + pb, 64)
         
-        concat_features = torch.cat([pooling_features, prob_features], dim=1) # (p1 + p2 + ... + pb, out_channels + 4)
+        concat_features = torch.cat([pooling_features, semantic_features], dim=1) # (p1 + p2 + ... + pb, out_channels * 2)
         
         gate_weight = self.gate_fusion(concat_features) # (p1 + p2 + ... + pb, 64)
         
@@ -382,10 +382,10 @@ class PillarPainting(nn.Module):
         ]
 
         # val and test
-        self.nms_pre = 100
+        self.nms_pre = 200
         self.nms_thr = 0.1
-        self.score_thr = 0.13
-        self.max_num = 25
+        self.score_thr = 0.15
+        self.max_num = 30
 
     def get_predicted_bboxes_single(self, bbox_cls_pred, bbox_pred, bbox_dir_cls_pred, anchors):
         '''

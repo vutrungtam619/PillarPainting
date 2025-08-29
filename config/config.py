@@ -41,7 +41,7 @@ config = {
         'init_lr': 0.00025,
         'epoch': 160,
         'ckpt_freq': 2,
-        'log_freq': 25,
+        'log_freq': 10,
         'log_dir': os.path.join(project_root, 'log')
     }    
 }
